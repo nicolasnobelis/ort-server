@@ -43,6 +43,13 @@ jobs:
           task: :transport:kubernetes-jobmonitor:jibDockerBuild
         - jibImage: advisor-worker
           task: :workers:advisor:jibDockerBuild
+        - image: analyzer-worker-base-image-21
+          args: --build-arg TEMURIN_VERSION=21
+          context: workers/analyzer/docker
+          dockerfile: Analyzer.Dockerfile
+          jibImage: analyzer-worker
+          task: :workers:analyzer:jibDockerBuild
+          freeDiskSpace: true
         - image: analyzer-worker-base-image
           context: workers/analyzer/docker
           dockerfile: Analyzer.Dockerfile
@@ -128,6 +135,7 @@ jobs:
       with:
         context: ${{ matrix.docker.context }}
         file: ${{ matrix.docker.context }}/${{ matrix.docker.dockerfile }}
+        build-args: ${{ matrix.docker.args }}
         push: true
         tags: ${{ steps.meta-base.outputs.tags }}
         labels: ${{ steps.meta-base.outputs.labels }}
